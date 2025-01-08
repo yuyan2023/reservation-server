@@ -1,0 +1,113 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Manager {
+  id String @id @unique @default(uuid())
+  userName String @unique @map("user_name")
+  password String
+  nickName String? @map("nick_name")
+  avatar String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("managers") // @@map("managers") 表示映射到数据库中的表名为 managers
+}
+
+// 文章分类
+model ArticleCategoty {
+  id String @id @unique @default(uuid())
+  name String 
+  desc String?
+  content String? @db.Text // @db.Text 表示数据库中的字段类型为 text,没有长度限制
+  img String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("article_categoties")
+  Article Article[]
+}
+
+// 文章信息
+model Article {
+  id String @id @unique @default(uuid())
+  title String
+  desc String?
+  content String? @db.Text
+  IcoverImage String?  @map("cover_image")
+  views Int @default(0) //浏览次数
+  link String? //外链
+  articleCategory ArticleCategoty? @relation(fields: [articleCategoryId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  articleCategoryId String? @map("article_category_id")
+
+  @@map("articles")
+}
+
+//预约信息
+//title 2024年6月1日 上午
+//desc 当天场馆儿童节活动，预约之后参加
+//maxCount 最大预约人数200人
+//startDate 预约开始时间 2024年6月1日 00:00:00
+// Content 预约内容
+model Reservation {
+  id String @id @unique @default(uuid())
+  title String?
+  desc String?
+  content String?
+  coverImage String? @map("cover_image")
+  views Int @default(0)
+  link String?
+  maxCount Int @default(10) @map("max_count") //最大预约人数
+  startDate DateTime? @map("start_date") //可以预约的时间
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("reservations")
+  ReservationLog ReservationLog[]
+}
+
+//预约记录
+model ReservationLog {
+  id String @id @unique @default(uuid())
+  name String
+  moblie String
+  address String?
+  cardId String? @map("card_id") //身份证号
+  reservation Reservation? @relation(fields: [reservationId], references: [id]) //预约信息
+  user User? @relation(fields: [userId], references: [id]) //用户信息
+  status Int @default(0) //0 未处理 1 已处理
+  startDate DateTime? @map("start_date") //预约时间
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  reservationId String? @map("reservation_id")
+  userId String? @map("user_id")
+
+  @@map("reservation_logs")
+}
+
+// 用户信息
+model User {
+  id String @id @unique @default(uuid())
+  userName String @unique @map("user_name")
+  password String
+  nickName String? @map("nick_name")
+  avatar String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+  ReservationLog ReservationLog[]
+}

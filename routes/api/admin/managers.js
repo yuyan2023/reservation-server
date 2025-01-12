@@ -9,7 +9,7 @@
  * 批量删除
  */
 const router = require('express').Router();
-const { parseDate } = require('../../../utils/tools');
+const { parseData, encodedPwd } = require('../../../utils/tools');
 const { prisma } = require('../../../db');
 
 /**
@@ -20,16 +20,19 @@ router.get('/', async (req, res) => {
     const count = await prisma.manager.count();
     const list = await prisma.manager.findMany({
         where:{},
-        skip: (page - 1) * limit,
-        take: limit,
+        skip: (page *1- 1) * limit,
+        take: limit *1,
         //排序
         orderBy: {
             createdAt: 'desc'
         },
     });
-    res.json(parseDate({
-        data: list,
-        page,
+    res.json(parseData({
+        data: list.map(item => {
+            delete item.password;
+            return item;
+        }),
+        page: page * 1,
         pages: Math.ceil(count / limit),
         count,
     },
@@ -42,23 +45,68 @@ router.get('/', async (req, res) => {
 /**
  *  新增 
  * */
-router.post('/', async (req, res) => {  
+router.post('/', async (req, res, next) => {  
+    encodedPwd(req.body.password, async (pwd) => {
+        try{
+            await prisma.manager.create({
+            data: {
+                userName: req.body.userName,
+                password: pwd,
+                nickName: req.body.nickName,
+                avatar: req.body.avatar,
+            },
+        });
+        res.json(parseData({},true,'新增成功'));
+        }catch(err){
+          next(err)
+        }
+        
+    });
 
 });
 
 /**
  * 根据一个id修改
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', async (req, res,next) => {
+    try{
+        await prisma.manager.update({
+            where: {
+                id: req.params.id,
+            },
+            data: {
+                nickName: req.body.nickName,
+                avatar: req.body.avatar,
+            },
+        });
+        res.json(parseData({},true,'修改成功'));
+
+    }catch(err){
+        next(err)
+    }
 
 })
 
 /**
  * 修改密码
  */
-router.put('/:id/reset_pwd', async (req, res) => {
-
-})
+router.put('/:id/reset_pwd', async (req, res, next) => {
+    encodedPwd(req.body.password, async (pwd) => {
+        try{
+            await prisma.manager.update({
+                where: {
+                    id: req.params.id,
+                },
+                data: {
+                    password: pwd,
+                },
+            });
+            res.json(parseData({},true,'修改成功'));
+        }catch(err){
+            next(err)
+        }
+    });
+});
 
 /**
  * 获取当前用户的登录信息，需要token
@@ -70,7 +118,19 @@ router.get('/info', async(req,res) => {
 /**
  * 获取单条记录,不包含密码
  */
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req, res, next) => {
+    try{
+        const data = await prisma.manager.findUnique({
+            where: {
+                id: req.params.id,
+            },
+        });
+        delete data.password;
+        res.json(parseData(data,true,'获取数据成功'));
+
+    }catch(err){
+        next(err)
+    }
 
 })
 
@@ -80,13 +140,37 @@ router.get('/:id', async (req, res) => {
  * 例如：/delete_many?id=1,2,3
  */
 router.delete('/delete_many', async (req, res) => {
+    try{
+        const { count} = await prisma.manager.deleteMany({
+            where: {
+                id: {
+                    in:req.query.id.split(',')
+                }
+            },
+        });
+        res.json(parseData(count,true,'删除多条成功'));
+
+    }catch(err){
+        next(err)
+    }
 
 })
 
 /**
  * 删除单个
  */
-router.delete('/:id', async (req, res) => { 
+router.delete('/:id', async (req, res,next) => { 
+    try{
+        await prisma.manager.delete({
+            where: {
+                id: req.params.id,
+            },
+        });
+        res.json(parseData({},true,'删除成功'));
+    }catch(err){
+        next(err)
+    }
+
     
 })
 

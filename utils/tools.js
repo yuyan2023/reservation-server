@@ -8,7 +8,7 @@ const bcrypt = require('bcryptjs');
  * @param {*} errorCode 
  * @returns 
  */
-function parseDate(
+function parseData(
     date = {},
     success = true,
     errorMessage = '',
@@ -51,7 +51,7 @@ function comparePwd(password, hash, cb) {
 }
 
 module.exports = {  
-    parseDate,
+    parseData,
     encodedPwd,
     comparePwd
     };

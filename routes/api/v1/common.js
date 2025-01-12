@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const router = require('express').Router();
 const multer = require('multer');
-const { parseDate } = require('../../../../utils/tools');
+const { parseDate } = require('../../../utils/tools');
 
 //如果上传目录不存在，那么就先创建目录
 if(!fs.existsSync(('./public/uploads'))) {

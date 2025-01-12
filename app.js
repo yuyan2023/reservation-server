@@ -6,6 +6,9 @@ const logger = require('morgan');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const { prisma } = require('./db');
+const { encodedPwd } = require('./utils/tools');
+
 
 const app = express();
 
@@ -24,7 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api/v1/common', require('./routes/api/v1/common'));
-app.use('/api/admin/managers', require('./routes/api/admin/managers'));
+app.use('/api/v1/admin/managers', require('./routes/api/admin/managers'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -39,7 +42,28 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.json(parseData(err.message, false, 'error',err.status || 500));
 });
 
+initDbData();
+//初始化数据库数据
+async function initDbData() {
+  const countAdmin = await prisma.manager.count({  
+    where: { 
+      userName: 'admin' 
+},
+});
+if (countAdmin === 0) {
+  encodedPwd('admin', async (pwd) => {
+  await prisma.manager.create({
+    data: {
+      userName: 'admin',
+      password: 'pwd',
+      nickName: 'admin',
+      avatar:''
+    },
+  });
+});
+}
+}
 module.exports = app;

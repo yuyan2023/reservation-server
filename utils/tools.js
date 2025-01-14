@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs'); 
-
+const { token } = require('morgan');
+const jwt = require('jsonwebtoken');
 /**
  * 
  * @param {*} date 
@@ -50,8 +51,26 @@ function comparePwd(password, hash, cb) {
   })
 }
 
+const secretKey ='arivin-key'
+/**
+ * 生成token数据
+ * @param {*} user 
+ * @returns 
+ */
+function generateToken(user) {
+
+  const token = jwt.sign(
+    {userId: user.id,},
+     secretKey,
+    {expiresIn: '5h'}
+  );
+  return token;
+  
+}
+
 module.exports = {  
     parseData,
     encodedPwd,
-    comparePwd
+    comparePwd,
+    generateToken
     };

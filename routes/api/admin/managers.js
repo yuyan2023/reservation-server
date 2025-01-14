@@ -34,7 +34,7 @@ router.get('/', async (req, res) => {
         }),
         page: page * 1,
         pages: Math.ceil(count / limit),
-        count,
+        total:count,
     },
     true,'获取数据成功'
 )

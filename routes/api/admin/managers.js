@@ -9,7 +9,7 @@
  * 批量删除
  */
 const router = require('express').Router();
-const { parseData, encodedPwd } = require('../../../utils/tools');
+const { parseData, encodedPwd, getUserId } = require('../../../utils/tools');
 const { prisma } = require('../../../db');
 
 /**
@@ -112,6 +112,12 @@ router.put('/:id/reset_pwd', async (req, res, next) => {
  * 获取当前用户的登录信息，需要token
  */
 router.get('/info', async(req,res) => {
+    const id = getUserId(req.headers.authorization.split(' ')[1]);
+    const user = await prisma.manager.findFirst({
+        where: {id},
+    });
+    delete user.password;
+    res.json(parseData(user,true,'获取数据成功'));
 
 })
 

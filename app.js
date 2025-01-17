@@ -7,7 +7,7 @@ const logger = require('morgan');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const { prisma } = require('./db');
-const { encodedPwd } = require('./utils/tools');
+const { encodedPwd, secretKey } = require('./utils/tools');
 
 
 const app = express();
@@ -23,12 +23,18 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+const jwtCheck = require('express-jwt').expressjwt({
+  secret: secretKey,
+  algorithms: ['HS256'],
+})
 // 使用自己写的路由模块
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api/v1/common', require('./routes/api/v1/common'));
 // login
 app.use('/api/v1/auth', require('./routes/api/v1/auth'));
+
+app.use('/api/v1/admin/*', jwtCheck);
 app.use('/api/v1/admin/managers', require('./routes/api/admin/managers'));
 
 // catch 404 and forward to error handler

@@ -67,10 +67,20 @@ function generateToken(user) {
   return token;
   
 }
+function getUserId(token) {
+  try{
+    const decoded = jwt.verify(token, secretKey);
+    return decoded.userId;
+  }catch(err){
+    return null;
+  }
+}
 
 module.exports = {  
     parseData,
     encodedPwd,
     comparePwd,
-    generateToken
+    generateToken,
+    secretKey,
+    getUserId,
     };

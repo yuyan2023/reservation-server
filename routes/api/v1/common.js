@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const router = require('express').Router();
 const multer = require('multer');
-const { parseDate } = require('../../../utils/tools');
+const { parseData } = require('../../../utils/tools');
 
 //如果上传目录不存在，那么就先创建目录
 if(!fs.existsSync(('./public/uploads'))) {
@@ -29,7 +29,7 @@ const storage = multer.diskStorage({
 
 router.post('/upload', upload.single('file') ,(req, res) => {
   // upload file
-  res.json(parseDate('/uploads/' + req.file.filename))
+  res.json(parseData('/uploads/' + req.file.filename))
 
 })
 

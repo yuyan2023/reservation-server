@@ -15,8 +15,8 @@ const { prisma } = require('../../../db');
  */
 router.get('/', async (req, res) => {
     const {page = 1, limit = 10} = req.query;
-    const count = await prisma.articleCategory.count();
-    const list = await prisma.articleCategory.findMany({
+    const count = await prisma.articleCategoty.count();
+    const list = await prisma.articleCategoty.findMany({
         where:{},
         skip: (page *1- 1) * limit,
         take: limit *1,
@@ -45,7 +45,7 @@ router.get('/', async (req, res) => {
  * */
 router.post('/', async (req, res, next) => {  
         try{
-            await prisma.articleCategory.create({
+            await prisma.articleCategoty.create({
             data: req.body,
         });
         res.json(parseData({},true,'新增成功'));
@@ -60,7 +60,7 @@ router.post('/', async (req, res, next) => {
  */
 router.put('/:id', async (req, res,next) => {
     try{
-        await prisma.articleCategory.update({
+        await prisma.articleCategoty.update({
             where: {
                 id: req.params.id,
             },
@@ -81,7 +81,7 @@ router.put('/:id', async (req, res,next) => {
  */
 router.get('/:id', async (req, res, next) => {
     try{
-        const data = await prisma.articleCategory.findUnique({
+        const data = await prisma.articleCategoty.findUnique({
             where: {
                 id: req.params.id,
             },
@@ -102,7 +102,7 @@ router.get('/:id', async (req, res, next) => {
  */
 router.delete('/delete_many', async (req, res) => {
     try{
-        const { count} = await prisma.articleCategory.deleteMany({
+        const { count} = await prisma.articleCategoty.deleteMany({
             where: {
                 id: {
                     in:req.query.id.split(',')
@@ -122,7 +122,7 @@ router.delete('/delete_many', async (req, res) => {
  */
 router.delete('/:id', async (req, res,next) => { 
     try{
-        await prisma.articleCategory.delete({
+        await prisma.articleCategoty.delete({
             where: {
                 id: req.params.id,
             },

@@ -7,7 +7,7 @@
  * 批量删除
  */
 const router = require('express').Router();
-const { parseData} = require('../../../utils/tools');
+const { parseData } = require('../../../utils/tools');
 const { prisma } = require('../../../db');
 
 /**
@@ -15,8 +15,8 @@ const { prisma } = require('../../../db');
  */
 router.get('/', async (req, res) => {
     const {page = 1, limit = 10} = req.query;
-    const count = await prisma.articleCategoty.count();
-    const list = await prisma.articleCategoty.findMany({
+    const count = await prisma.article.count();
+    const list = await prisma.article.findMany({
         where:{},
         skip: (page *1- 1) * limit,
         take: limit *1,
@@ -45,7 +45,7 @@ router.get('/', async (req, res) => {
  * */
 router.post('/', async (req, res, next) => {  
         try{
-            await prisma.articleCategoty.create({
+            await prisma.article.create({
             data: req.body,
         });
         res.json(parseData({},true,'新增成功'));
@@ -60,7 +60,7 @@ router.post('/', async (req, res, next) => {
  */
 router.put('/:id', async (req, res,next) => {
     try{
-        await prisma.articleCategoty.update({
+        await prisma.article.update({
             where: {
                 id: req.params.id,
             },
@@ -81,7 +81,7 @@ router.put('/:id', async (req, res,next) => {
  */
 router.get('/:id', async (req, res, next) => {
     try{
-        const data = await prisma.articleCategoty.findUnique({
+        const data = await prisma.article.findUnique({
             where: {
                 id: req.params.id,
             },
@@ -102,7 +102,7 @@ router.get('/:id', async (req, res, next) => {
  */
 router.delete('/delete_many', async (req, res) => {
     try{
-        const { count} = await prisma.articleCategoty.deleteMany({
+        const { count} = await prisma.article.deleteMany({
             where: {
                 id: {
                     in:req.query.id.split(',')
@@ -122,7 +122,7 @@ router.delete('/delete_many', async (req, res) => {
  */
 router.delete('/:id', async (req, res,next) => { 
     try{
-        await prisma.articleCategoty.delete({
+        await prisma.article.delete({
             where: {
                 id: req.params.id,
             },

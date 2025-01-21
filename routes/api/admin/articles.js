@@ -15,11 +15,27 @@ const { prisma } = require('../../../db');
  */
 router.get('/', async (req, res) => {
     const {page = 1, limit = 10} = req.query;
-    const count = await prisma.article.count();
+    const title = req.query.name;
+    const count = await prisma.article.count({
+        where:{
+            title: {
+                contains: title,
+            },
+        },
+    });
+   
     const list = await prisma.article.findMany({
-        where:{},
+        where:{
+            title: {
+                contains: title,
+            },
+        },
         skip: (page *1- 1) * limit,
         take: limit *1,
+        include: {
+                articleCategory: true,  
+                
+        },
         //排序
         orderBy: {
             createdAt: 'desc'
@@ -84,6 +100,9 @@ router.get('/:id', async (req, res, next) => {
         const data = await prisma.article.findUnique({
             where: {
                 id: req.params.id,
+            },
+            include: {
+                articleCategory: true,
             },
         });
 

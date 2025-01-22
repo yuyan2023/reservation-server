@@ -39,6 +39,7 @@ app.use('/api/v1/admin/managers', require('./routes/api/admin/managers'));
 app.use('/api/v1/admin/article_categories', require('./routes/api/admin/article_categories'));
 
 app.use('/api/v1/admin/articles', require('./routes/api/admin/articles'));
+app.use('/api/v1/admin/reservations', require('./routes/api/admin/reservations'));
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

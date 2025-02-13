@@ -40,6 +40,11 @@ app.use('/api/v1/admin/article_categories', require('./routes/api/admin/article_
 
 app.use('/api/v1/admin/articles', require('./routes/api/admin/articles'));
 app.use('/api/v1/admin/reservations', require('./routes/api/admin/reservations'));
+app.use(
+  '/api/v1/admin/reservation_logs',
+   require('./routes/api/admin/reservation_logs'));
+
+app.use('/api/v1/admin/users', require('./routes/api/admin/users'));
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

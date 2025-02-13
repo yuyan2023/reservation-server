@@ -13,7 +13,8 @@ const { prisma } = require('../../../db');
 /**
  * 列表
  */
-router.get('/', async (req, res) => {
+router.get('/', async (req, res,next) => {
+    try{
     const {page = 1, limit = 10} = req.query;
     const title = req.query.name;
     const count = await prisma.article.count({
@@ -53,6 +54,9 @@ router.get('/', async (req, res) => {
     true,'获取数据成功'
 )
 );
+}catch(err){
+    next(err)
+}
 
 });
 

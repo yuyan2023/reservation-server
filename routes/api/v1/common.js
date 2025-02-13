@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const router = require('express').Router();
 const multer = require('multer');
-const { parseData } = require('../../../utils/tools');
+const { parseData, generateQrcode } = require('../../../utils/tools');
 
 //如果上传目录不存在，那么就先创建目录
 if(!fs.existsSync(('./public/uploads'))) {
@@ -32,5 +32,12 @@ router.post('/upload', upload.single('file') ,(req, res) => {
   res.json(parseData('/uploads/' + req.file.filename))
 
 })
+
+router.get('/qrcode',(req,res)=>{
+  const data = req.query.data;
+  generateQrcode(data,(url)=>{
+    res.json(parseData(url))
+  });
+});
 
 module.exports = router;

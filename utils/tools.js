@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs'); 
-const { token } = require('morgan');
 const jwt = require('jsonwebtoken');
+const qrcode = require('qrcode');
 /**
  * 
  * @param {*} date 
@@ -68,12 +68,12 @@ function generateToken(user) {
   
 }
 function getUserId(token) {
-  try{
-    const decoded = jwt.verify(token, secretKey);
-    return decoded.userId;
-  }catch(err){
-    return null;
-  }
+  return jwt.verify(token,secretKey).userId;
+}
+function generateQrcode(data,cb){
+  qrcode.toDataURL(data,{},(err,url) => {
+    cb(url);
+  });
 }
 
 module.exports = {  
@@ -83,4 +83,5 @@ module.exports = {
     generateToken,
     secretKey,
     getUserId,
+    generateQrcode
     };

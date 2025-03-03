@@ -34,6 +34,8 @@ app.use('/api/v1/common', require('./routes/api/v1/common'));
 // login
 app.use('/api/v1/auth', require('./routes/api/v1/auth'));
 
+//此处不需要登陆就能访问，c端
+app.use('/api/v1/info', require('./routes/api/v1/info'));
 app.use('/api/v1/admin/*', jwtCheck);
 app.use('/api/v1/admin/managers', require('./routes/api/admin/managers'));
 app.use('/api/v1/admin/article_categories', require('./routes/api/admin/article_categories'));
